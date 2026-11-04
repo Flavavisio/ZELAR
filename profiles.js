@@ -71,7 +71,7 @@ function rows(items){return '<div class="profile-rows">'+items.map(x=>'<div clas
 function floor(){
  const h=demo.homes[0];
  return panel("Planta 2D — "+h.name,
- '<div class="room-grid" id="demoFloor">'+h.rooms.map(r=>'<button class="room-cell '+(r.state==="presence"?"occupied":"")+'" data-room="'+r.id+'"><span>⌂</span><span>'+esc(r.name)+'</span><small>'+(r.state==="presence"?'● Presença · <span data-active-duration>'+formatDuration(Date.now()-tracking.enteredAt)+'</span>':"Sem atividade")+'</small></button>').join("")+'</div>'+
+ '<div class="profile-actions" style="margin:0 0 14px"><a class="btn btn-primary" href="planta3d.html">⬡ &nbsp; Abrir planta 3D interativa →</a></div><div class="room-grid" id="demoFloor">'+h.rooms.map(r=>'<button class="room-cell '+(r.state==="presence"?"occupied":"")+'" data-room="'+r.id+'"><span>⌂</span><span>'+esc(r.name)+'</span><small>'+(r.state==="presence"?'● Presença · <span data-active-duration>'+formatDuration(Date.now()-tracking.enteredAt)+'</span>':"Sem atividade")+'</small></button>').join("")+'</div>'+
  '<div class="room-current" id="roomInfo">Presença atual: <strong>'+esc(currentRoom()?.name||"Desconhecida")+'</strong> desde '+formatClock(tracking.enteredAt)+' · <strong data-active-duration>'+formatDuration(Date.now()-tracking.enteredAt)+'</strong></div>'+
  '<div class="profile-actions"><button class="btn btn-outline" type="button" id="nextRoom">Simular deslocação →</button></div>'+
  '<div class="profile-duration-title">Tempo acumulado por divisão</div><div data-duration-totals>'+timeByRoomRows()+'</div>',
@@ -129,7 +129,7 @@ function init(){
  nav.addEventListener("click",e=>{const b=e.target.closest("[data-section]");if(b){render(b.dataset.section);document.querySelector(".sidebar").classList.remove("open");}});
  document.getElementById("roleLogout").addEventListener("click",()=>{sessionStorage.removeItem(DEMO_SESSION_KEY);sessionStorage.removeItem(DEMO_ROLE_KEY);location.href="login.html";});
  document.getElementById("roleMenu").addEventListener("click",()=>document.querySelector(".sidebar").classList.toggle("open"));
- render("overview");
+ render(location.hash==="#floor" && role!=="super"?"floor":"overview");
  setInterval(()=>{
   document.querySelectorAll("[data-active-duration]").forEach(el=>el.textContent=formatDuration(Date.now()-tracking.enteredAt));
   const totals=document.querySelector("[data-duration-totals]");if(totals)totals.innerHTML=timeByRoomRows();
