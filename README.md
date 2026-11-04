@@ -61,3 +61,7 @@ Acede através da **Planta 2D → Abrir planta 3D interativa** nos painéis Empr
 - Precisa de Internet para carregar Three.js; apresenta visualização simplificada quando não consegue carregar o módulo.
 
 **Estado:** apenas demonstração. Os móveis e paredes são fictícios e não correspondem à planta real de uma habitação. Não existe ainda editor de plantas, ligação física a Aqara, sincronização entre dispositivos ou informação clínica fiável. A aplicação não deve ser utilizada para emergências.
+
+## Seguimento por zonas na planta 3D
+
+A demonstração permite escolher sofá, mesa, portas, cama, bancada e casa de banho; a figura move-se suavemente entre os pontos e um percurso automático apresenta a mudança de zonas. O histórico atual continua a contar **permanência por divisão**, não tempos por zona. A localização é **simulada** e os eventos reais continuam pendentes de integração. Ver [contrato de eventos e limitações](docs/aqara-zonas.md).
