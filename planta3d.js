@@ -41,7 +41,7 @@ $("sideNav").innerHTML=navByRole[role].map(([icon,label,url])=>'<a href="'+url+'
 $("roleLabel").textContent=role==="empresa"?"EMPRESA CUIDADORA":role==="familiar"?"ÁREA FAMILIAR":"SUPERADMINISTRADOR";
 $("roleCrumb").textContent=role==="empresa"?"Empresa cuidadora":role==="familiar"?"O meu familiar":"Superadministrador";
 $("avatar").textContent=role==="empresa"?"EM":role==="familiar"?"FA":"SA";
-$("view2d").href=role==="empresa"?"empresa.html":"familiar.html";
+$("view2d").href=(role==="empresa"?"empresa.html":role==="familiar"?"familiar.html":"superadmin.html")+"#floor";
 $("todayLabel").textContent=new Date().toLocaleDateString("pt-PT",{day:"numeric",month:"short",year:"numeric"});
 $("menuBtn").onclick=()=>document.querySelector(".sidebar").classList.toggle("open");
 $("logoutBtn").onclick=()=>{sessionStorage.removeItem(SESSION);sessionStorage.removeItem(ROLE_KEY);location.href="login.html";};
@@ -151,7 +151,7 @@ async function init3D(){
     const vec=new THREE.Vector3(r.label[0],1.35,r.label[1]).project(camera);
     const b=labels.get(r.id);
     b.style.left=((vec.x+1)/2*width)+"px";
-    b.style.top=((-vec.y+1)/2*height+65)+"px";
+    b.style.top=((-vec.y+1)/2*height)+"px";
     b.style.display=vec.z<=1?"block":"none";
    }
   }
