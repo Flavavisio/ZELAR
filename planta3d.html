@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0d4438"><title>Planta 3D — Zelar</title><link rel="stylesheet" href="planta3d.css"></head>
+<body>
+<div class="layout">
+<aside class="sidebar"><a class="logo" href="index.html"><span class="logo-icon">✦</span> Zelar<span class="period">.</span></a><small class="side-title" id="roleLabel">ACOMPANHAMENTO</small><nav id="sideNav"></nav><div class="side-foot"><span class="demo-dot"></span> Demonstração Zelar<br><button id="logoutBtn" class="logout">↩ Terminar sessão</button></div></aside>
+<div class="workspace">
+<header class="topbar"><button class="hamburger" id="menuBtn" aria-label="Abrir menu">☰</button><div class="breadcrumbs">ZELAR <span>/</span> <span id="roleCrumb">Habitação</span> <span>/</span> Planta 3D</div><div class="header-side"><span class="demo-tag">DADOS SIMULADOS</span><span class="avatar" id="avatar">FA</span></div></header>
+<main class="content">
+<section class="toolbar"><div class="resident-card"><span class="resident-avatar">M</span><div><strong>Maria</strong><small>Habitação: Casa da Maria · Exemplo fictício</small></div><span class="chevron">⌄</span></div><div class="view-switch"><a href="#" id="view2d" class="switch-btn">▤ &nbsp; Planta 2D</a><span class="switch-btn active">⬡ &nbsp; Planta 3D</span></div><div class="today">▦ &nbsp; <span id="todayLabel">Hoje</span></div></section>
+<div class="notice">Protótipo com movimentos simulados. O símbolo é uma localização ilustrativa, não representa a posição real de uma pessoa. Ainda não comunica com os sensores Aqara.</div>
+<div class="dashboard">
+<section class="left-column"><div class="scene-card"><div class="scene-head"><div><span class="eyebrow">HABITAÇÃO INTELIGENTE</span><h1>Planta 3D <span class="live-dot"></span></h1></div><div class="scene-controls"><button id="rotateBtn" title="Repor orientação">⟳ Vista inicial</button><button id="zoomOut" title="Afastar">−</button><button id="zoomIn" title="Aproximar">+</button></div></div>
+<div id="scene" class="scene" aria-label="Modelo tridimensional interativo da habitação"><div id="sceneFallback" class="scene-fallback">A iniciar a visualização 3D…<br><small>Se não carregar, verifica a ligação à Internet.</small></div></div>
+<div id="roomLabels" class="room-labels" aria-label="Divisões da planta"></div>
+<div class="scene-actions"><button class="primary-action" id="simulateBtn">▶ &nbsp; Simular deslocação</button><button class="secondary-action" id="historyBtn">▤ &nbsp; Histórico de hoje</button><button class="secondary-action" id="totalsBtn">▥ &nbsp; Tempo por divisão</button><span class="hint">Arrasta para rodar · Roda para ampliar</span></div></div>
+<div class="history-card" id="historyCard"><div class="card-head"><h2>Histórico de deslocações</h2><span>Esta sessão</span></div><div class="table-wrap"><table><thead><tr><th>Divisão</th><th>Entrada</th><th>Saída</th><th>Tempo</th><th>Estado</th></tr></thead><tbody id="historyTable"></tbody></table></div></div></section>
+<aside class="right-column"><section class="current-card"><div class="walking">♙</div><div><small>PRESENÇA ATUAL (SIMULADA)</small><h2 id="currentRoom">Sala</h2><p>Há <strong id="currentElapsed">00:00:00</strong></p></div></section>
+<section class="side-card" id="totalsCard"><div class="card-head"><h2>Tempo acumulado</h2><span>Esta sessão</span></div><div id="roomTotals"></div></section>
+<section class="side-card"><div class="card-head"><h2>Resumo da sessão</h2></div><div class="summary-row"><span>◷ &nbsp; Tempo monitorizado</span><strong id="totalMonitored">00:00:00</strong></div><div class="summary-row"><span>⇄ &nbsp; Deslocações</span><strong id="movesCount">0</strong></div><div class="summary-row"><span>⌂ &nbsp; Divisões visitadas</span><strong id="visitedCount">1</strong></div><div class="summary-row"><span>◉ &nbsp; Origem dos dados</span><strong>Simulação</strong></div></section>
+<section class="side-card note-card"><strong>Integração Aqara</strong><p>O Hub M3 e o FP2 continuam por integrar. Os contadores reais exigem eventos de presença, hora de entrada/saída e validação de falhas.</p></section></aside>
+</div></main></div></div>
+<script type="module" src="planta3d.js"></script></body></html>
