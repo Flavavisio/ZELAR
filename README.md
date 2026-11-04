@@ -41,3 +41,9 @@ O repositório é público. Não carregar credenciais, ficheiros SQLite, dados d
 - `login.html`: seleção de perfil e credenciais de demonstração.
 
 **Muito importante:** a seleção de perfil e as credenciais estão no navegador e podem ser contornadas. Não existe autenticação ou autorização real e não devem ser guardados dados pessoais. O isolamento de empresas, familiares e idosos deverá ser validado no servidor, nunca apenas no JavaScript. As plantas e os sensores ainda utilizam dados simulados.
+
+## Registo de tempo por divisão (demonstração)
+
+Nos painéis Empresa e Familiar, a planta 2D acompanha a duração da presença simulada na divisão atual. O botão **Simular deslocação** encerra a passagem anterior e regista hora de entrada, hora de saída e duração; a passagem seguinte inicia novo contador. O painel apresenta histórico das passagens e tempo acumulado por divisão. Os dados de demonstração ficam apenas no `sessionStorage` do navegador e não são partilhados entre dispositivos nem guardados no backend.
+
+Na futura integração Aqara, os tempos deverão ser calculados a partir de eventos com carimbo temporal e confirmação de presença, tratando perda de sinal, múltiplas pessoas e possíveis falsas deteções. A interface não deve afirmar uma localização precisa ou presença contínua sem confirmação dos sensores.
