@@ -30,3 +30,14 @@ O ficheiro `app.py` contém uma API local Python/SQLite independente do front-en
 **Não é um sistema de emergência.** Sem ligações reais, notificações ou validação física. Não utilizar para proteção de pessoas.
 
 O repositório é público. Não carregar credenciais, ficheiros SQLite, dados de saúde nem nomes reais de idosos.
+
+
+## Perfis web de demonstração
+
+- `superadmin.html`: empresas, utilizadores, planos, catálogo de equipamentos, estado técnico e auditoria.
+- `empresa.html`: idosos, habitações, plantas 2D, sensores, alertas e equipa.
+- `familiar.html`: acompanhamento de familiar autorizado (simulado), **planta 2D interativa**, atividade, alertas e resumos.
+- `profiles.css` e `profiles.js`: componentes, navegação e estados fictícios para os três painéis.
+- `login.html`: seleção de perfil e credenciais de demonstração.
+
+**Muito importante:** a seleção de perfil e as credenciais estão no navegador e podem ser contornadas. Não existe autenticação ou autorização real e não devem ser guardados dados pessoais. O isolamento de empresas, familiares e idosos deverá ser validado no servidor, nunca apenas no JavaScript. As plantas e os sensores ainda utilizam dados simulados.
