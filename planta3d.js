@@ -60,6 +60,22 @@ function persist(){sessionStorage.setItem(TRACK_KEY,JSON.stringify(tracking));}
 const current=()=>rooms.find(r=>r.id===tracking.activeRoomId)||rooms[0];
 const fmt=ms=>{let t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return [h,m,s].map(n=>String(n).padStart(2,"0")).join(":");};
 const clock=t=>new Date(t).toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const lastPresence=id=>tracking.visits.find(v=>v.roomId===id)?.exitedAt||null;
+const shortDuration=ms=>{const sec=Math.max(0,Math.floor(ms/1000));return sec>=3600?Math.floor(sec/3600)+" h "+Math.floor(sec%3600/60)+" min":sec>=60?Math.floor(sec/60)+" min":sec+" s";};
+function setupPhoto(){
+ const input=$("photoUpload"),photo=$("residentPhoto"),initials=$("residentInitials");
+ const saved=sessionStorage.getItem("zelar-demo-resident-photo");
+ if(saved?.startsWith("data:image/")){photo.src=saved;photo.hidden=false;initials.hidden=true;}
+ input.addEventListener("change",()=>{
+  const file=input.files?.[0];if(!file)return;
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>1500000){alert("Escolhe uma imagem JPG, PNG ou WebP até 1,5 MB.");input.value="";return;}
+  const reader=new FileReader();reader.onload=()=>{if(typeof reader.result!=="string")return;
+   try{sessionStorage.setItem("zelar-demo-resident-photo",reader.result);}catch(error){alert("Não foi possível guardar a fotografia nesta sessão.");return;}
+   photo.src=reader.result;photo.hidden=false;initials.hidden=true;
+  };reader.readAsDataURL(file);
+ });
+}
+setupPhoto();
 const duration=id=>tracking.visits.filter(v=>v.roomId===id).reduce((a,v)=>a+v.durationMs,0)+(tracking.activeRoomId===id?Math.max(0,getTime()-tracking.enteredAt):0);
 const total=()=>rooms.reduce((a,r)=>a+duration(r.id),0);
 function enterRoom(id){
@@ -97,20 +113,22 @@ function updateUI(){
  $("confidenceLabel").textContent="Simulada · por zona";
  renderZones();
  $("currentElapsed").textContent=fmt(Date.now()-tracking.enteredAt);
+ $("bedroomDuration").textContent=fmt(duration(3));
  const all=total();
  $("roomTotals").innerHTML=rooms.map(r=>{
  const ms=duration(r.id),pct=all?Math.round(ms/all*100):0;
- return '<div class="room-total"><span class="total-icon">'+r.icon+'</span><span class="total-name">'+r.name+'</span><span class="total-time">'+fmt(ms)+' <small>('+pct+'%)</small></span><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div></div>';
+ return '<div class="room-total"><span class="total-icon">'+r.icon+'</span><span class="total-name">'+r.name+'</span><span class="total-time">'+shortDuration(ms)+' <small>('+pct+'%)</small></span><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div></div>';
  }).join("");
  const visits=[{roomId:tracking.activeRoomId,roomName:current().name,enteredAt:tracking.enteredAt,exitedAt:null,durationMs:Math.max(0,Date.now()-tracking.enteredAt)},...tracking.visits];
- $("historyTable").innerHTML=visits.map((v,i)=>'<tr class="'+(i===0?"current-row":"")+'"><td><strong>'+v.roomName+'</strong></td><td>'+clock(v.enteredAt)+'</td><td>'+(v.exitedAt?clock(v.exitedAt):'—')+'</td><td>'+fmt(v.durationMs)+'</td><td>'+(i===0?'<span class="ongoing">● Em curso</span>':'Concluída')+'</td></tr>').join("");
+ $("historyTable").innerHTML=visits.map((v,i)=>'<tr class="'+(i===0?"current-row":"")+'"><td>'+(visits.length-i)+'</td><td><strong>'+v.roomName+'</strong></td><td>'+clock(v.enteredAt)+'</td><td>'+(v.exitedAt?clock(v.exitedAt):'—')+'</td><td>'+fmt(v.durationMs)+'</td><td>'+(i===0?'<span class="ongoing">● Em curso</span>':'Concluída')+'</td></tr>').join("");
  $("totalMonitored").textContent=fmt(all);
  $("movesCount").textContent=tracking.visits.length;
  $("visitedCount").textContent=new Set(visits.map(v=>v.roomId)).size;
  for(const r of rooms){
   const b=labels.get(r.id);
   b.className="floating-room"+(r.id===tracking.activeRoomId?" active":"");
-  b.innerHTML='<strong>'+r.name+'</strong><small>'+(r.id===tracking.activeRoomId?'● '+fmt(Date.now()-tracking.enteredAt):fmt(duration(r.id))+' acumulado')+'</small>';
+  const last=lastPresence(r.id);
+  b.innerHTML='<strong>'+r.icon+' &nbsp; '+r.name+'</strong><small>'+(r.id===tracking.activeRoomId?'Presença atual · '+fmt(Date.now()-tracking.enteredAt):'Última saída: '+(last?clock(last):'—'))+'</small><small>'+(r.id===tracking.activeRoomId?'● Em curso':shortDuration(duration(r.id))+' acumulado')+'</small>';
  }
 }
 updateUI();setInterval(updateUI,1000);
