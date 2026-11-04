@@ -102,6 +102,11 @@ $("menuBtn").onclick=()=>document.querySelector(".sidebar").classList.toggle("op
 $("logoutBtn").onclick=()=>{sessionStorage.removeItem(SESSION);sessionStorage.removeItem(ROLE_KEY);location.href="login.html";};
 $("simulateBtn").onclick=()=>enterRoom(rooms[(rooms.findIndex(r=>r.id===tracking.activeRoomId)+1)%rooms.length].id);
 $("historyBtn").onclick=()=>$("historyCard").scrollIntoView({behavior:"smooth",block:"start"});
+$("zonesBtn").onclick=()=>{
+ const card=$("zoneCard"),show=card.hidden;card.hidden=!show;
+ $("zonesBtn").setAttribute("aria-expanded",String(show));
+ if(show)card.scrollIntoView({behavior:"smooth",block:"nearest"});
+};
 $("totalsBtn").onclick=()=>$("totalsCard").scrollIntoView({behavior:"smooth",block:"start"});
 $("autoTrackBtn").onclick=()=>{if(autoTimer!==null){stopAuto();return;}stepAuto();autoTimer=setInterval(stepAuto,3500);$("autoTrackBtn").textContent="■ Parar percurso automático";$("autoTrackBtn").setAttribute("aria-pressed","true");};
 window.addEventListener("pagehide",stopAuto);
