@@ -8,6 +8,43 @@ const rooms=[{id:1,name:"Sala",icon:"▣",center:[-4.3,-0.7],label:[-4.6,-1.7],c
  {id:2,name:"Cozinha",icon:"▤",center:[3.5,-2.5],label:[3.3,-2.5],color:0xe7ddd0},
  {id:3,name:"Quarto",icon:"▰",center:[3.5,2.5],label:[4.2,2.4],color:0xe4e0d8},
  {id:4,name:"Casa de banho",icon:"◉",center:[-1,3.4],label:[-1.5,3.5],color:0xd9e6e4}];
+/* Zonas de demonstração: posições aproximadas dentro de cada divisão. */
+const zones=[
+ {id:"sofa",roomId:1,name:"Sofá",x:-5.15,z:-1.7},
+ {id:"mesa",roomId:1,name:"Mesa de jantar",x:-4.45,z:2.5},
+ {id:"entrada-sala",roomId:1,name:"Entrada da sala",x:-1.5,z:-.45},
+ {id:"bancada",roomId:2,name:"Bancada",x:3.15,z:-2.2},
+ {id:"entrada-cozinha",roomId:2,name:"Entrada da cozinha",x:1.1,z:-1.3},
+ {id:"cama",roomId:3,name:"Cama",x:4.5,z:1.5},
+ {id:"entrada-quarto",roomId:3,name:"Entrada do quarto",x:1.5,z:1.6},
+ {id:"lavatório",roomId:4,name:"Lavatório",x:-.55,z:2.8},
+ {id:"duche",roomId:4,name:"Duche",x:-1.4,z:4.0}
+];
+const ZONE_KEY="zelar-demo-position-zone-v1";
+let activeZone=zones.find(z=>z.id===sessionStorage.getItem(ZONE_KEY))||zones[0];
+let autoTimer=null;
+function zoneForRoom(roomId){return zones.find(z=>z.roomId===roomId);}
+function chooseZone(zoneId){
+ const next=zones.find(z=>z.id===zoneId);if(!next)return;
+ if(next.roomId!==tracking.activeRoomId)enterRoom(next.roomId);
+ activeZone=next;sessionStorage.setItem(ZONE_KEY,next.id);
+ setMarker();updateUI();
+}
+function renderZones(){
+ const choices=zones.filter(z=>z.roomId===tracking.activeRoomId);
+ $("zoneButtons").innerHTML=choices.map(z=>'<button class="zone-choice'+(z.id===activeZone.id?" selected":"")+'" type="button" data-zone="'+z.id+'">'+z.name+'</button>').join("");
+ $("zoneButtons").querySelectorAll("[data-zone]").forEach(b=>b.addEventListener("click",()=>chooseZone(b.dataset.zone)));
+ $("zoneDetail").textContent="Zona provável (simulada): "+activeZone.name+". A posição 3D é ilustrativa e não corresponde a coordenadas de radar.";
+}
+function stopAuto(){
+ if(autoTimer!==null)clearInterval(autoTimer);autoTimer=null;
+ $("autoTrackBtn").textContent="▶ Iniciar percurso automático";
+ $("autoTrackBtn").setAttribute("aria-pressed","false");
+}
+function stepAuto(){
+ const index=zones.findIndex(z=>z.id===activeZone.id);
+ chooseZone(zones[(index+1)%zones.length].id);
+}
 const getTime=()=>Date.now();
 function readTrack(){
  try{let x=JSON.parse(sessionStorage.getItem(TRACK_KEY)||"null");
@@ -30,6 +67,7 @@ function enterRoom(id){
  tracking.visits.unshift({roomId:old.id,roomName:old.name,enteredAt:tracking.enteredAt,exitedAt:now,durationMs:Math.max(0,now-tracking.enteredAt)});
  tracking.visits=tracking.visits.slice(0,100);
  tracking.activeRoomId=id;tracking.enteredAt=now;persist();
+ if(activeZone.roomId!==id){activeZone=zoneForRoom(id);sessionStorage.setItem(ZONE_KEY,activeZone.id);}
  updateUI();setMarker();
 }
 const navByRole={
@@ -48,10 +86,15 @@ $("logoutBtn").onclick=()=>{sessionStorage.removeItem(SESSION);sessionStorage.re
 $("simulateBtn").onclick=()=>enterRoom(rooms[(rooms.findIndex(r=>r.id===tracking.activeRoomId)+1)%rooms.length].id);
 $("historyBtn").onclick=()=>$("historyCard").scrollIntoView({behavior:"smooth",block:"start"});
 $("totalsBtn").onclick=()=>$("totalsCard").scrollIntoView({behavior:"smooth",block:"start"});
+$("autoTrackBtn").onclick=()=>{if(autoTimer!==null){stopAuto();return;}stepAuto();autoTimer=setInterval(stepAuto,3500);$("autoTrackBtn").textContent="■ Parar percurso automático";$("autoTrackBtn").setAttribute("aria-pressed","true");};
+window.addEventListener("pagehide",stopAuto);
 const labels=new Map();
 rooms.forEach(r=>{const button=document.createElement("button");button.className="floating-room";button.type="button";button.addEventListener("click",()=>enterRoom(r.id));$("roomLabels").appendChild(button);labels.set(r.id,button);});
 function updateUI(){
  $("currentRoom").textContent=current().name;
+ $("currentZone").textContent=activeZone.name;
+ $("confidenceLabel").textContent="Simulada · por zona";
+ renderZones();
  $("currentElapsed").textContent=fmt(Date.now()-tracking.enteredAt);
  const all=total();
  $("roomTotals").innerHTML=rooms.map(r=>{
@@ -70,13 +113,12 @@ function updateUI(){
  }
 }
 updateUI();setInterval(updateUI,1000);
-let scene,camera,renderer,controls,THREE,marker,raycaster,clickable=[],roomRoot;
-let placementReady=false;
+let scene,camera,renderer,controls,THREE,marker;
+let targetPosition=null;
 function setMarker(){
  if(!marker)return;
- const r=current(),start=new THREE.Vector3(marker.position.x,marker.position.y,marker.position.z);
- const target=new THREE.Vector3(r.center[0],0.45,r.center[1]);
- marker.position.copy(target);
+ targetPosition=new THREE.Vector3(activeZone.x,0.45,activeZone.z);
+ if(!marker.userData.positionInitialized){marker.position.copy(targetPosition);marker.userData.positionInitialized=true;}
 }
 function fallback(){
  const root=$("scene");
@@ -157,7 +199,7 @@ async function init3D(){
   }
   const sceneTop=()=>{};
   function frame(){
-   requestAnimationFrame(frame);controls.update();if(marker){const disc=marker.children[0];disc.scale.setScalar(1+Math.sin(Date.now()/380)*.14);}
+   requestAnimationFrame(frame);controls.update();if(marker){if(targetPosition)marker.position.lerp(targetPosition,.065);const disc=marker.children[0];disc.scale.setScalar(1+Math.sin(Date.now()/380)*.14);}
    drawLabels();renderer.render(scene,camera);
   }
   frame();
