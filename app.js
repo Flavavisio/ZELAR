@@ -17,9 +17,9 @@ let data=readData();
 function save(){sessionStorage.setItem(DATA_KEY,JSON.stringify(data));}
 function initHome(){const y=$("#year");if(y)y.textContent=new Date().getFullYear();}
 function initLogin(){
- if(sessionStorage.getItem(AUTH_KEY)==="demo")location.replace("admin.html");
+ if(sessionStorage.getItem(AUTH_KEY)==="demo" && ["super","empresa","familiar"].includes(sessionStorage.getItem("zelar-demo-role"))) location.replace(({super:"superadmin.html",empresa:"empresa.html",familiar:"familiar.html"})[sessionStorage.getItem("zelar-demo-role")]);
  $("#togglePassword").addEventListener("click",()=>{const input=$("#password");const show=input.type==="password";input.type=show?"text":"password";$("#togglePassword").textContent=show?"Ocultar":"Mostrar";});
- $("#loginForm").addEventListener("submit",e=>{e.preventDefault();const email=$("#email").value.trim().toLowerCase();const password=$("#password").value;const error=$("#loginError");if(email===DEMO_USER&&password===DEMO_PASS){sessionStorage.setItem(AUTH_KEY,"demo");location.href="admin.html";}else{error.textContent="Credenciais de demonstração incorretas. Consulta os dados abaixo."; }});
+ $("#loginForm").addEventListener("submit",e=>{e.preventDefault();const email=$("#email").value.trim().toLowerCase();const password=$("#password").value;const error=$("#loginError");if(email===DEMO_USER&&password===DEMO_PASS){const role=$("#roleSelect").value; if(!["super","empresa","familiar"].includes(role)){error.textContent="Perfil inválido";return;} sessionStorage.setItem(AUTH_KEY,"demo");sessionStorage.setItem("zelar-demo-role",role);location.href=({super:"superadmin.html",empresa:"empresa.html",familiar:"familiar.html"})[role];}else{error.textContent="Credenciais de demonstração incorretas. Consulta os dados abaixo."; }});
 }
 function event(description,homeId=1){data.events.unshift({id:Date.now(),description,when:new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"}),homeId});data.events=data.events.slice(0,30);save();}
 function render(){
