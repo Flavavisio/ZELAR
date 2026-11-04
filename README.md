@@ -65,3 +65,13 @@ Acede através da **Planta 2D → Abrir planta 3D interativa** nos painéis Empr
 ## Seguimento por zonas na planta 3D
 
 A demonstração permite escolher sofá, mesa, portas, cama, bancada e casa de banho; a figura move-se suavemente entre os pontos e um percurso automático apresenta a mudança de zonas. O histórico atual continua a contar **permanência por divisão**, não tempos por zona. A localização é **simulada** e os eventos reais continuam pendentes de integração. Ver [contrato de eventos e limitações](docs/aqara-zonas.md).
+
+## Ecrã inicial com layout 3D (empresa e familiar)
+
+Após escolher Empresa ou Familiar no `login.html`, a demonstração abre diretamente `planta3d.html`, com o painel inspirado na referência aprovada: identificação do idoso, alternador de vistas 2D/3D, etiquetas nas divisões, presença atual, durações acumuladas, resumo e histórico de deslocações.
+
+É possível clicar no retrato para selecionar uma **fotografia de demonstração** (JPG/PNG/WebP até 1,5 MB), armazenada apenas no `sessionStorage` do navegador. Não usar uma fotografia real de um idoso neste protótipo público sem garantias de privacidade. O modelo 3D apresenta mobiliário geométrico simplificado e não uma renderização fotorrealista.
+
+O painel de acompanhamento por zonas continua acessível no botão **Zonas**, mas recolhido por defeito para preservar o layout do ecrã principal.
+
+**Ainda pendente:** autenticação real, base de dados privada, autorização de acesso a fotos, editor de habitações e integração Aqara / cloud. Os contadores são simulações de sessão, não dados de um dia efetivamente monitorizado.
