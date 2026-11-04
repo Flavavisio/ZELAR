@@ -55,6 +55,7 @@ function readTrack(){
  return {activeRoomId:1,enteredAt:getTime(),visits:[]};
 }
 let tracking=readTrack();
+if(activeZone.roomId!==tracking.activeRoomId){activeZone=zoneForRoom(tracking.activeRoomId);sessionStorage.setItem(ZONE_KEY,activeZone.id);}
 function persist(){sessionStorage.setItem(TRACK_KEY,JSON.stringify(tracking));}
 const current=()=>rooms.find(r=>r.id===tracking.activeRoomId)||rooms[0];
 const fmt=ms=>{let t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return [h,m,s].map(n=>String(n).padStart(2,"0")).join(":");};
